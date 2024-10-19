@@ -42,6 +42,7 @@ multiplesheets <- function(fname) {
 
 
 ```{r}
+setwd("D:/cfs")
 data = multiplesheets("./23-24 CFSN Student Feedback Survey + Mentor Assistance (Responses).xlsx")
 ```
 
@@ -62,15 +63,35 @@ Make a summary table for each column from Q to AB (17 to 28).
 for (column_index in 17:28){
   likert = unlist(lapply(data, function(df) df[column_index]))
   print(colnames(data[[1]])[column_index])
-  print(table(likert))
+  col_name = colnames(data[[1]])[column_index]
+  freq_table = table(likert)
+  print(freq_table)
 }
 ```
 
 ```{r}
 for (column_index in 17:19){
   likert = unlist(lapply(data, function(df) df[column_index]))
+  likert = factor(likert, levels = c('1 - Strongly Disagree', '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
   print(colnames(data[[1]])[column_index])
-  print(table(likert))
+  
+  col_name = colnames(data[[1]])[column_index]
+  title_text <- sub(".*\\[(.*)\\].*", "\\1", col_name)
+  
+  freq_table = table(likert)
+  percent_table = freq_table/sum(freq_table) * 100
+  
+  plot_name = paste0(paste0(title_text, '.png'))
+  
+  # png(plot_name, width = 800, height = 600)
+  barplot(
+    percent_table, 
+    main = title_text,
+    names.arg = c('Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'), 
+    # xlab = 'Response', 
+    ylab = 'Percentage (%)', 
+    ylim = c(0, 100),
+    col = 'lightblue3'  # Optional: Adds color to the bars
+  )
 }
 ```
-
