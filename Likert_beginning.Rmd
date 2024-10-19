@@ -12,7 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(readxl)
 ```
 
-
 ```{r}
 setwd("D:/cfs")
 ```
@@ -42,7 +41,6 @@ multiplesheets <- function(fname) {
 
 
 ```{r}
-setwd("D:/cfs")
 data = multiplesheets("./23-24 CFSN Student Feedback Survey + Mentor Assistance (Responses).xlsx")
 ```
 
@@ -57,7 +55,7 @@ data[[1]]
 ```{r}
 data[[2]]
 ```
-Make a summary table for each column from Q to AB (17 to 28). 
+Make a summary frequency table for each column from Q to AB (17 to 28). 
 
 ```{r}
 for (column_index in 17:28){
@@ -69,29 +67,86 @@ for (column_index in 17:28){
 }
 ```
 
+Making barplots of histogram for each category of response. 
+
 ```{r}
 for (column_index in 17:19){
   likert = unlist(lapply(data, function(df) df[column_index]))
-  likert = factor(likert, levels = c('1 - Strongly Disagree', '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
   print(colnames(data[[1]])[column_index])
+  print(table(likert))
   
-  col_name = colnames(data[[1]])[column_index]
+  # Get the column name
+  col_name <- colnames(data[[1]])[column_index]
+  
+  # Extract the text inside square brackets
   title_text <- sub(".*\\[(.*)\\].*", "\\1", col_name)
   
-  freq_table = table(likert)
-  percent_table = freq_table/sum(freq_table) * 100
+  # Set factor levels to include all response options from 1 to 5
+  likert <- factor(likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
   
-  plot_name = paste0(paste0(title_text, '.png'))
+  # Create a frequency table and convert to percentages
+  freq_table <- table(likert)
+  percent_table <- (freq_table / sum(freq_table)) * 100
   
-  # png(plot_name, width = 800, height = 600)
+  # Save the figure
+  # file_name = paste0(column_index, '_', title_text, 'png')
+  # png(file_name, width = 800, height = 600)
+  
+  
+  # Create the percent bar plot with all categories
   barplot(
     percent_table, 
-    main = title_text,
-    names.arg = c('Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'), 
-    # xlab = 'Response', 
+    main = title_text, 
+    xlab = 'Response', 
     ylab = 'Percentage (%)', 
-    ylim = c(0, 100),
-    col = 'lightblue3'  # Optional: Adds color to the bars
+    ylim = c(0, 100),  # Set y-axis limit to 100%
+    names.arg = c('Strongly Disagree',  'Disagree', 'Neutral', 'Agree', 'Strongly Agree'),   # Ensure x-axis shows all options 1-5
+    col = 'lightblue' 
   )
+  
+  # dev.off()
+}
+```
+
+Making barplots after grouping. 
+
+```{r}
+for (column_index in 17:19){
+  likert = unlist(lapply(data, function(df) df[column_index]))
+  print(colnames(data[[1]])[column_index])
+  print(table(likert))
+  
+  # Get the column name
+  col_name <- colnames(data[[1]])[column_index]
+  
+  # Extract the text inside square brackets
+  title_text <- sub(".*\\[(.*)\\].*", "\\1", col_name)
+  
+  # Set factor levels to include all response options from 1 to 5
+  likert <- factor(likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+  
+  # Create a frequency table and convert to percentages
+  freq_table <- table(likert)
+  percent_table <- (freq_table / sum(freq_table)) * 100
+  
+  percent_table_grouped = c(percent_table[1] + percent_table[2], percent_table[3], percent_table[4] + percent_table[5])
+  
+  # Save the figure
+  file_name = paste0(column_index, '_grouped_', title_text, 'png')
+  # png(file_name, width = 800, height = 600)
+  
+  
+  # Create the percent bar plot with all categories
+  barplot(
+    percent_table_grouped, 
+    main = title_text, 
+    xlab = 'Response', 
+    ylab = 'Percentage (%)', 
+    ylim = c(0, 100),  # Set y-axis limit to 100%
+    names.arg = c('Strongly Disagree or Disagree', 'Neutral', 'Agree or Strongly Agree'),   # Ensure x-axis shows all options 1-5
+    col = 'lightblue' 
+  )
+  
+  # dev.off()
 }
 ```
