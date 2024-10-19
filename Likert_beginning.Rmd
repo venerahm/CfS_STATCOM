@@ -1,0 +1,76 @@
+---
+title: "Likert"
+output: html_document
+date: '2024-10-12'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+```
+
+
+```{r}
+setwd("D:/cfs")
+```
+
+
+```{r}
+data = read_excel("./23-24 CFSN Student Feedback Survey + Mentor Assistance (Responses).xlsx")
+```
+
+Reading multiple sheets in the Excel
+
+```{r}
+multiplesheets <- function(fname) { 
+   
+  # getting info about all excel sheets 
+  sheets <- readxl::excel_sheets(fname) 
+  tibble <- lapply(sheets, function(x) readxl::read_excel(fname, sheet = x)) 
+  data_frame <- lapply(tibble, as.data.frame) 
+    
+  # assigning names to data frames 
+  # names(data_frame) <- sheets 
+    
+  # print data frame 
+  # print(data_frame) 
+} 
+```
+
+
+```{r}
+data = multiplesheets("./23-24 CFSN Student Feedback Survey + Mentor Assistance (Responses).xlsx")
+```
+
+Each sheet is in a list of data. 
+
+Example 
+
+```{r}
+data[[1]]
+```
+
+```{r}
+data[[2]]
+```
+Make a summary table for each column from Q to AB (17 to 28). 
+
+```{r}
+for (column_index in 17:28){
+  likert = unlist(lapply(data, function(df) df[column_index]))
+  print(colnames(data[[1]])[column_index])
+  print(table(likert))
+}
+```
+
+```{r}
+for (column_index in 17:19){
+  likert = unlist(lapply(data, function(df) df[column_index]))
+  print(colnames(data[[1]])[column_index])
+  print(table(likert))
+}
+```
+
