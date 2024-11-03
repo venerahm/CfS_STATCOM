@@ -18,7 +18,7 @@ setwd("D:/cfs")
 
 
 ```{r}
-data = read_excel("./23-24 CFSN Student Feedback Survey + Mentor Assistance (Responses).xlsx")
+data = read_excel("./Data/23-24 CFSN Student Feedback Survey + Mentor Assistance (Responses).xlsx")
 ```
 
 Reading multiple sheets in the Excel
@@ -41,7 +41,7 @@ multiplesheets <- function(fname) {
 
 
 ```{r}
-data = multiplesheets("./23-24 CFSN Student Feedback Survey + Mentor Assistance (Responses).xlsx")
+data = multiplesheets("./Data/23-24 CFSN Student Feedback Survey + Mentor Assistance (Responses).xlsx")
 ```
 
 Each sheet is in a list of data. 

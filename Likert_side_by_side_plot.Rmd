@@ -1,0 +1,148 @@
+---
+title: "Untitled"
+output: html_document
+date: '2024-11-03'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(readxl)
+```
+
+```{r}
+setwd("D:/cfs")
+```
+
+
+```{r}
+mentee = read_excel("./Data/23-24 CFSN Student Feedback Survey + Mentor Assistance (Responses).xlsx")
+mentor = read_excel("./Data/CFSN Mentor Feedback Survey 23-24 (Responses).xlsx")
+```
+
+Reading multiple sheets in the Excel
+
+```{r}
+multiplesheets <- function(fname) { 
+   
+  # getting info about all excel sheets 
+  sheets <- readxl::excel_sheets(fname) 
+  tibble <- lapply(sheets, function(x) readxl::read_excel(fname, sheet = x)) 
+  data_frame <- lapply(tibble, as.data.frame) 
+    
+  # assigning names to data frames 
+  # names(data_frame) <- sheets 
+    
+  # print data frame 
+  # print(data_frame) 
+} 
+```
+
+
+```{r}
+mentee = multiplesheets("./Data/23-24 CFSN Student Feedback Survey + Mentor Assistance (Responses).xlsx")
+mentor = multiplesheets("./Data/CFSN Mentor Feedback Survey 23-24 (Responses).xlsx")
+```
+
+```{r}
+colnames(mentee[[1]])
+```
+
+Improve: 17, 4
+
+Confidence: 18, 5
+
+Enjoy: 21, 13
+
+Voice and respect: 23, 12
+
+```{r}
+colnames(mentor[[1]])
+```
+
+```{r}
+mentee_index = 17
+mentee_likert = unlist(lapply(mentee, function(df) df[mentee_index]))
+likert <- factor(mentee_likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+mentee_freq_table = table(likert)
+mentee_percent_table = mentee_freq_table/sum(mentee_freq_table) * 100
+print(mentee_percent_table)
+
+mentor_index = 4
+mentor_likert = unlist(lapply(mentor, function(df) df[mentor_index]))
+likert <- factor(mentor_likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+mentor_freq_table = table(likert)
+mentor_percent_table = mentor_freq_table/sum(mentor_freq_table) * 100
+print(mentor_percent_table)
+```
+
+```{r}
+response = rep(c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'), 2)
+role = rep(c("Mentee", "Mentor"), each = length(mentor_percent_table))
+data = data.frame(Percent = c(as.numeric(mentee_percent_table), as.numeric(mentor_percent_table)), Response = response, Role = role)
+data
+```
+
+```{r}
+ggplot(data, aes(x = Response, y = Percent, fill = Role)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(
+    title = "I (My mentee) have improved reading skills",
+    x = "Response",
+    y = "Percentage"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+data_grouped <- data %>%
+  mutate(
+    GroupedResponse = case_when(
+      Response %in% c("5 - Strongly Agree", "4 - Agree") ~ "Agree/Strongly Agree",
+      Response %in% c("1 - Strongly Disagree", "2 - Disagree") ~ "Disagree/Strongly Disagree",
+      TRUE ~ "Neutral"
+    )
+  ) %>% group_by(Role, GroupedResponse) %>%
+  summarize(Percent = sum(Percent))
+  # Summarize the percentages for the grouped responses
+  
+```
+
+```{r}
+data_grouped
+```
+
+```{r}
+data_grouped$GroupedResponse <- factor(
+  data_grouped$GroupedResponse,
+  levels = c("Disagree/Strongly Disagree", "Neutral", "Agree/Strongly Agree")
+)
+```
+
+
+```{r}
+# png("Comparison_improved_reading_skills.png")
+ggplot(data_grouped, aes(x = GroupedResponse, y = Percent, fill = Role)) +
+  geom_bar(stat = "identity", position = position_dodge()) + ylim(0, 100) + 
+  geom_text(
+    aes(label = paste0(round(Percent, 2), "%")),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5
+  ) +
+  labs(
+    title = "I (My mentee) have improved reading skills",
+    x = "Response",
+    y = "Percentage"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2") # +
+  # theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# dev.off()
+```
+
+
