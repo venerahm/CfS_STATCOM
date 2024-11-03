@@ -14,6 +14,12 @@ library(readxl)
 ```
 
 ```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+
+```{r}
 setwd("D:/cfs")
 ```
 
@@ -64,7 +70,7 @@ colnames(mentor[[1]])
 ```
 
 ```{r}
-mentee_index = 17
+mentee_index = 17 
 mentee_likert = unlist(lapply(mentee, function(df) df[mentee_index]))
 likert <- factor(mentee_likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
 mentee_freq_table = table(likert)
@@ -135,7 +141,7 @@ ggplot(data_grouped, aes(x = GroupedResponse, y = Percent, fill = Role)) +
     vjust = -0.5
   ) +
   labs(
-    title = "I (My mentee) have improved reading skills",
+    title = "I have improved reading skills / My mentee has improved reading skills",
     x = "Response",
     y = "Percentage"
   ) +
@@ -145,4 +151,215 @@ ggplot(data_grouped, aes(x = GroupedResponse, y = Percent, fill = Role)) +
 # dev.off()
 ```
 
+#### Confidence 
 
+```{r}
+mentee_index = 18 
+mentee_likert = unlist(lapply(mentee, function(df) df[mentee_index]))
+likert <- factor(mentee_likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+mentee_freq_table = table(likert)
+mentee_percent_table = mentee_freq_table/sum(mentee_freq_table) * 100
+print(mentee_percent_table)
+
+mentor_index = 5
+mentor_likert = unlist(lapply(mentor, function(df) df[mentor_index]))
+likert <- factor(mentor_likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+mentor_freq_table = table(likert)
+mentor_percent_table = mentor_freq_table/sum(mentor_freq_table) * 100
+print(mentor_percent_table)
+```
+
+```{r}
+response = rep(c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'), 2)
+role = rep(c("Mentee", "Mentor"), each = length(mentor_percent_table))
+data = data.frame(Percent = c(as.numeric(mentee_percent_table), as.numeric(mentor_percent_table)), Response = response, Role = role)
+data
+```
+
+```{r}
+data_grouped <- data %>%
+  mutate(
+    GroupedResponse = case_when(
+      Response %in% c("5 - Strongly Agree", "4 - Agree") ~ "Agree/Strongly Agree",
+      Response %in% c("1 - Strongly Disagree", "2 - Disagree") ~ "Disagree/Strongly Disagree",
+      TRUE ~ "Neutral"
+    )
+  ) %>% group_by(Role, GroupedResponse) %>%
+  summarize(Percent = sum(Percent))
+  # Summarize the percentages for the grouped responses
+  
+```
+
+```{r}
+data_grouped
+```
+
+```{r}
+data_grouped$GroupedResponse <- factor(
+  data_grouped$GroupedResponse,
+  levels = c("Disagree/Strongly Disagree", "Neutral", "Agree/Strongly Agree")
+)
+```
+
+
+```{r}
+# png("Comparison_more_confident.png")
+ggplot(data_grouped, aes(x = GroupedResponse, y = Percent, fill = Role)) +
+  geom_bar(stat = "identity", position = position_dodge()) + ylim(0, 100) + 
+  geom_text(
+    aes(label = paste0(round(Percent, 2), "%")),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5
+  ) +
+  labs(
+    title = "I feel more confident / My mentee feel more confident",
+    x = "Response",
+    y = "Percentage"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2") # +
+  # theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# dev.off()
+```
+
+#### Enjoy
+
+```{r}
+mentee_index = 21 
+mentee_likert = unlist(lapply(mentee, function(df) df[mentee_index]))
+likert <- factor(mentee_likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+mentee_freq_table = table(likert)
+mentee_percent_table = mentee_freq_table/sum(mentee_freq_table) * 100
+print(mentee_percent_table)
+
+mentor_index = 13
+mentor_likert = unlist(lapply(mentor, function(df) df[mentor_index]))
+likert <- factor(mentor_likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+mentor_freq_table = table(likert)
+mentor_percent_table = mentor_freq_table/sum(mentor_freq_table) * 100
+print(mentor_percent_table)
+```
+
+```{r}
+response = rep(c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'), 2)
+role = rep(c("Mentee", "Mentor"), each = length(mentor_percent_table))
+data = data.frame(Percent = c(as.numeric(mentee_percent_table), as.numeric(mentor_percent_table)), Response = response, Role = role)
+data
+```
+
+```{r}
+data_grouped <- data %>%
+  mutate(
+    GroupedResponse = case_when(
+      Response %in% c("5 - Strongly Agree", "4 - Agree") ~ "Agree/Strongly Agree",
+      Response %in% c("1 - Strongly Disagree", "2 - Disagree") ~ "Disagree/Strongly Disagree",
+      TRUE ~ "Neutral"
+    )
+  ) %>% group_by(Role, GroupedResponse) %>%
+  summarize(Percent = sum(Percent))
+  # Summarize the percentages for the grouped responses
+  
+```
+
+```{r}
+data_grouped
+```
+
+```{r}
+data_grouped$GroupedResponse <- factor(
+  data_grouped$GroupedResponse,
+  levels = c("Disagree/Strongly Disagree", "Neutral", "Agree/Strongly Agree")
+)
+```
+
+
+```{r}
+# png("Comparison_enjoy_session.png")
+ggplot(data_grouped, aes(x = GroupedResponse, y = Percent, fill = Role)) +
+  geom_bar(stat = "identity", position = position_dodge()) + ylim(0, 100) + 
+  geom_text(
+    aes(label = paste0(round(Percent, 2), "%")),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5
+  ) +
+  labs(
+    title = "I enjoy my mentoring sessions",
+    x = "Response",
+    y = "Percentage"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2") # +
+  # theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# dev.off()
+```
+
+#### Value
+
+```{r}
+mentee_index = 23 
+mentee_likert = unlist(lapply(mentee, function(df) df[mentee_index]))
+likert <- factor(mentee_likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+mentee_freq_table = table(likert)
+mentee_percent_table = mentee_freq_table/sum(mentee_freq_table) * 100
+print(mentee_percent_table)
+
+mentor_index = 12
+mentor_likert = unlist(lapply(mentor, function(df) df[mentor_index]))
+likert <- factor(mentor_likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+mentor_freq_table = table(likert)
+mentor_percent_table = mentor_freq_table/sum(mentor_freq_table) * 100
+print(mentor_percent_table)
+```
+
+```{r}
+response = rep(c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'), 2)
+role = rep(c("Mentee", "Mentor"), each = length(mentor_percent_table))
+data = data.frame(Percent = c(as.numeric(mentee_percent_table), as.numeric(mentor_percent_table)), Response = response, Role = role)
+data
+```
+
+```{r}
+data_grouped <- data %>%
+  mutate(
+    GroupedResponse = case_when(
+      Response %in% c("5 - Strongly Agree", "4 - Agree") ~ "Agree/Strongly Agree",
+      Response %in% c("1 - Strongly Disagree", "2 - Disagree") ~ "Disagree/Strongly Disagree",
+      TRUE ~ "Neutral"
+    )
+  ) %>% group_by(Role, GroupedResponse) %>%
+  summarize(Percent = sum(Percent))
+  # Summarize the percentages for the grouped responses
+  
+```
+
+```{r}
+data_grouped
+```
+
+```{r}
+data_grouped$GroupedResponse <- factor(
+  data_grouped$GroupedResponse,
+  levels = c("Disagree/Strongly Disagree", "Neutral", "Agree/Strongly Agree")
+)
+```
+
+
+```{r}
+# png("Comparison_voice_value.png")
+ggplot(data_grouped, aes(x = GroupedResponse, y = Percent, fill = Role)) +
+  geom_bar(stat = "identity", position = position_dodge()) + ylim(0, 100) + 
+  geom_text(
+    aes(label = paste0(round(Percent, 2), "%")),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5
+  ) +
+  labs(
+    title = "My voice is important / I value my mentee's voice",
+    x = "Response",
+    y = "Percentage"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2") # +
+  # theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# dev.off()
+```
