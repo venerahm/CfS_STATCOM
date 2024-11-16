@@ -150,3 +150,128 @@ for (column_index in 17:19){
   # dev.off()
 }
 ```
+
+Table of agree or strongly agree
+
+Mentee: 
+
+```{r}
+for (column_index in 17:28){
+  likert = unlist(lapply(data, function(df) df[column_index]))
+  print(colnames(data[[1]])[column_index])
+  # print(table(likert))
+  
+  # Get the column name
+  col_name <- colnames(data[[1]])[column_index]
+  
+  # Extract the text inside square brackets
+  title_text <- sub(".*\\[(.*)\\].*", "\\1", col_name)
+  
+  # Set factor levels to include all response options from 1 to 5
+  likert <- factor(likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+  
+  # Create a frequency table and convert to percentages
+  freq_table <- table(likert)
+  percent_table <- (freq_table / sum(freq_table)) * 100
+  
+  percent_table_grouped = c(percent_table[1] + percent_table[2], percent_table[3], percent_table[4] + percent_table[5])
+  
+  print(percent_table_grouped)
+}
+```
+
+Mentor: 
+
+```{r}
+mentor = multiplesheets("./Data/CFSN Mentor Feedback Survey 23-24 (Responses).xlsx")
+```
+
+```{r}
+for (column_index in 4:14){
+  likert = unlist(lapply(mentor, function(df) df[column_index]))
+  print(colnames(mentor[[1]])[column_index])
+  # print(table(likert))
+  
+  # Get the column name
+  col_name <- colnames(mentor[[1]])[column_index]
+  
+  # Extract the text inside square brackets
+  title_text <- sub(".*\\[(.*)\\].*", "\\1", col_name)
+  
+  # Set factor levels to include all response options from 1 to 5
+  likert <- factor(likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+  
+  # Create a frequency table and convert to percentages
+  freq_table <- table(likert)
+  percent_table <- (freq_table / sum(freq_table)) * 100
+  
+  percent_table_grouped = c(percent_table[1] + percent_table[2], percent_table[3], percent_table[4] + percent_table[5])
+  
+  print(percent_table_grouped)
+}
+```
+
+family 
+
+```{r}
+family  = multiplesheets("./Data/CFSN Family Feedback Survey 23-24 (Responses).xlsx")
+```
+```{r}
+for (column_index in 6:14){
+  likert = unlist(lapply(family, function(df) df[column_index]))
+  print(colnames(family[[1]])[column_index])
+  # print(table(likert))
+  
+  print(table(likert))
+  
+
+  # Get the column name
+  col_name <- colnames(family[[1]])[column_index]
+
+  # Extract the text inside square brackets
+  title_text <- sub(".*\\[(.*)\\].*", "\\1", col_name)
+
+  # Set factor levels to include all response options from 1 to 5
+  likert <- factor(likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Estar de acuerdo', '4 - Agree', '5 - Totalmente de acuerdo', '5 - Strongly Agree'))
+
+  # Create a frequency table and convert to percentages
+  freq_table <- table(likert)
+  percent_table <- (freq_table / sum(freq_table)) * 100
+
+  percent_table_grouped = c(percent_table[1] + percent_table[2], percent_table[3], percent_table[4] + percent_table[5] + percent_table[6] + percent_table[7])
+
+  print(percent_table_grouped)
+}
+```
+
+Partner
+
+```{r}
+partner  = multiplesheets("./Data/CFSN Partner Survey (Responses) (2022 and 2024).xlsx")
+```
+
+```{r}
+for (column_index in 7:13){
+  likert = unlist(lapply(partner, function(df) df[column_index]))
+  print(colnames(partner[[1]])[column_index])
+  # print(table(likert))
+  
+  # Get the column name
+  col_name <- colnames(partner[[1]])[column_index]
+  
+  # Extract the text inside square brackets
+  title_text <- sub(".*\\[(.*)\\].*", "\\1", col_name)
+  
+  # Set factor levels to include all response options from 1 to 5
+  likert <- factor(likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Agree', '5 - Strongly Agree'))
+  
+  # Create a frequency table and convert to percentages
+  freq_table <- table(likert)
+  percent_table <- (freq_table / sum(freq_table)) * 100
+  
+  percent_table_grouped = c(percent_table[1] + percent_table[2], percent_table[3], percent_table[4] + percent_table[5])
+  
+  print(percent_table_grouped)
+}
+```
+
