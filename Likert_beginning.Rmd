@@ -190,7 +190,6 @@ mentor = multiplesheets("./Data/CFSN Mentor Feedback Survey 23-24 (Responses).xl
 for (column_index in 4:14){
   likert = unlist(lapply(mentor, function(df) df[column_index]))
   print(colnames(mentor[[1]])[column_index])
-  # print(table(likert))
   
   # Get the column name
   col_name <- colnames(mentor[[1]])[column_index]
@@ -216,33 +215,96 @@ family
 ```{r}
 family  = multiplesheets("./Data/CFSN Family Feedback Survey 23-24 (Responses).xlsx")
 ```
+
 ```{r}
-for (column_index in 6:14){
-  likert = unlist(lapply(family, function(df) df[column_index]))
-  print(colnames(family[[1]])[column_index])
-  # print(table(likert))
-  
-  print(table(likert))
-  
-
-  # Get the column name
-  col_name <- colnames(family[[1]])[column_index]
-
-  # Extract the text inside square brackets
-  title_text <- sub(".*\\[(.*)\\].*", "\\1", col_name)
-
-  # Set factor levels to include all response options from 1 to 5
-  likert <- factor(likert, levels = c('1 - Strongly Disagree',  '2 - Disagree', '3 - Neutral', '4 - Estar de acuerdo', '4 - Agree', '5 - Totalmente de acuerdo', '5 - Strongly Agree'))
-
-  # Create a frequency table and convert to percentages
-  freq_table <- table(likert)
-  percent_table <- (freq_table / sum(freq_table)) * 100
-
-  percent_table_grouped = c(percent_table[1] + percent_table[2], percent_table[3], percent_table[4] + percent_table[5] + percent_table[6] + percent_table[7])
-
-  print(percent_table_grouped)
+for (i in 1:19){
+  print(ncol(family[[i]]))
 }
 ```
+
+```{r}
+colnames(family[[1]])
+```
+
+
+```{r}
+colnames(family[[3]])
+```
+
+
+```{r}
+for (column in 6:14){
+  print(colnames(family[[1]])[column])
+  for(i in 1:length(family)){
+    if(i == 1){
+      df = family[[i]] # The last row in the first sheet has incomplete answer and the student name is test, so I eliminate the answer. 
+      combined = ifelse(!is.na(df[[column]]), df[[column]], df[[column + 24]])
+    }
+    df = family[[i]]
+    if(length(df) == 52){
+      combined = c(combined, df[[column]])
+    }
+  
+    if(length(df) == 26){
+      combined = c(combined, df[[column - 2]])
+    }  
+    
+  }
+  
+  print(table(combined))
+  
+}
+
+```
+
+```{r}
+for (column in 6:14){
+  print(colnames(family[[1]])[column])
+  for(i in 1:length(family)){
+    if(i == 1){
+      df = family[[i]] 
+      combined = ifelse(!is.na(df[[column]]), df[[column]], df[[column + 24]])
+    }
+    df = family[[i]]
+    if(length(df) == 52){
+      combined = c(combined, df[[column]])
+    }
+  
+    if(length(df) == 26){
+      combined = c(combined, df[[column - 2]])
+    }  
+    
+  }
+  
+# Set factor levels to include all response options from 1 to 5
+  likert <- factor(combined, levels = c('1 - Strongly Disagree', '1 - Muy en desacuerdo',  '3 - Neutral', '4 - Agree', '4 - Estar de acuerdo', '5 - Strongly Agree', '5 - Totalmente de acuerdo'))
+  
+  # Create a frequency table and convert to percentages
+  freq_table <- table(likert)
+  
+  percent_table <- (freq_table / sum(freq_table)) * 100
+  
+  percent_table_grouped = c(percent_table[1] + percent_table[2], percent_table[3] , percent_table[4] + percent_table[5] + percent_table[6] + percent_table[7])
+  
+  print(percent_table_grouped)
+  
+}
+```
+
+
+```{r}
+for(i in 1:length(family)){
+    df = family[[i]]
+    if(length(df) == 52){
+      print(sum(is.na(df[, 6:14])))
+    }
+    if(length(df) == 26){
+      print(sum(is.na(df[, 4:12])))
+    }
+}
+```
+
+The last row in the first sheet and the 16th sheet have family with incomplete answers and the student name is test. 
 
 Partner
 
